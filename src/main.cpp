@@ -1,18 +1,19 @@
 #include <M5StickCPlus.h>
 #include "FastLED.h"
 
-#define Neopixel_PIN 32
-#define NUM_LEDS 60
+#define Neopixel_PIN 32 // This is the pin when you plug in the neopixel strip
+#define NUM_LEDS 60     // My strip is 60 LEDs long
 
 // LEDs
 CRGB leds[NUM_LEDS];
 
+// TODO: The setup for effects here are super messy.
+// Maybe handle the "global" task state differently
+// and use structs for each effect? Or classes? 
+// (this is c++ technically)
+
 // Rainbow effect
 uint8_t gHue = 0;
-
-// Tasks
-// static TaskHandle_t FastLEDshowTaskHandle = 0;
-// static TaskHandle_t CycleEffectTaskHandle = 0;
 
 // For cycle
 uint8_t selected = 0;
