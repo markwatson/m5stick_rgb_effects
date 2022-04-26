@@ -9,7 +9,7 @@ CRGB leds[NUM_LEDS];
 
 // TODO: The setup for effects here are super messy.
 // Maybe handle the "global" task state differently
-// and use structs for each effect? Or classes?
+// and use structs for each effect? Or classes? 
 // (this is c++ technically)
 
 // Rainbow effect
@@ -23,9 +23,8 @@ CRGB colors[3] = {CRGB::Red, CRGB::Green, CRGB::Blue};
 uint8_t fade = 0;
 bool going_up = true;
 
-some invalid source code
-    // For wave
-    uint8_t wave_offset = 0;
+// For wave
+uint8_t wave_offset = 0;
 uint8_t wave_width = 10;
 bool wave_direction = true; // true == up, false == down
 
