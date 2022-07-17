@@ -9,7 +9,7 @@ CRGB leds[NUM_LEDS];
 
 // TODO: The setup for effects here are super messy.
 // Maybe handle the "global" task state differently
-// and use structs for each effect? Or classes? 
+// and use structs for each effect? Or classes?
 // (this is c++ technically)
 
 // Rainbow effect
@@ -172,9 +172,38 @@ const char *find_effect_name(int effect_id)
   }
 }
 
+double getBatteryLevel()
+{
+  // 4.188V seems to be max?
+  uint16_t vbatData = M5.Axp.GetVbatData();
+  double vbat = vbatData * 1.1 / 1000;
+  return 100.0 * ((vbat - 3.0) / (4.188 - 3.0)); // Other source had 4.07
+}
+
+TFT_eSprite *disp_buffer;
+char bat_msg_buf[50];
+void init_print_bat()
+{
+  disp_buffer = new TFT_eSprite(&M5.Lcd);
+  disp_buffer->setSwapBytes(false);
+  disp_buffer->createSprite(240, 50);
+  disp_buffer->fillRect(0, 0, 240, 50, BLACK);
+}
+void print_bat()
+{
+  float discharged = M5.Axp.GetCoulombData();
+  float battery_capacity = 120.0; // 120 mah
+  snprintf(bat_msg_buf, sizeof(bat_msg_buf), "battery: %.1f %%", battery_capacity + discharged);
+
+  disp_buffer->setTextSize(2);
+  disp_buffer->drawString(bat_msg_buf, 0, 0, 2);
+  disp_buffer->pushSprite(10, 60);
+}
+
 void print_effect(int effect_id)
 {
   M5.Lcd.fillScreen(BLACK);
+  print_bat();
   M5.Lcd.setCursor(10, 25);
   M5.Lcd.println(find_effect_name(effect_id));
 }
@@ -182,11 +211,13 @@ void print_effect(int effect_id)
 void setup()
 {
   M5.begin();
+  M5.Axp.EnableCoulombcounter(); // Battery status
 
   // Setup screen
   M5.Lcd.setRotation(1);
   M5.Lcd.setTextColor(BLUE);
   M5.Lcd.setTextSize(4);
+  init_print_bat();
   print_effect(effect); // No lock needed because thread not started.
   FastLED.addLeds<WS2811, Neopixel_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(10);
@@ -206,5 +237,6 @@ void loop()
     print_effect(effect_id);
     delay(500);
   }
+  print_bat();
   delay(50);
 }
